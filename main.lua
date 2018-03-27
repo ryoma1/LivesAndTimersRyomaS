@@ -3,6 +3,19 @@
 -- Course: ICS2O/3C
 -- This program
 
+----hide the status bar
+display.setStatusBar(display.HiddenStatusBar)
+
+-- sets the background colour
+display.setDefault("background", 0/255, 20/255, 100/255)
+
+------------------------------------------------------------------------
+--LOCAL VARIABLES
+------------------------------------------------------------------------
+--------------------------------------------------------------------
+--Add local variable for: incorrect object, points object, points
+--------------------------------------------------------------------
+
 --variables for the timer
 local totalSeconds = 5
 local secondsLeft = 5
@@ -10,45 +23,39 @@ local clockText
 local countDownTimer
 
 local lives = 3
+
 local heart1
 local heart2
 local heart3
 local heart4
---------------------------------------------------------------------
---Add local variable for: incorrect object, points object, points
---------------------------------------------------------------------
-
-----hide the status bar
-display.setStatusBar(display.HiddenStatusBar)
-
--- sets the background colour
-display.setDefault("background", 0/255, 20/255, 100/255)
 
 --create local variables
-
 local questionObject
 local correctObject
 local incorrectObject
 local numericField
+
 local randomNumber1
 local randomNumber2
 local randomOperator
+
 local userAnswer
 local correctAnswer
 
---local functions
+------------------------------------------------------------------------
+--LOCAL FUNCTIONS
+------------------------------------------------------------------------
 
 local function AskQuestion()
 	--generate 2 random numbers between a max. and a min. number
 	randomNumber1 = math.random(0, 15)
-	randomNumber2 = math.random(0, 30)
+	randomNumber2 = math.random(0, 15)
 	randomOperator = math.random(1,3)
 
 	-- subtraction
 	if (randomOperator == 1) then
-	correctAnswer = randomNumber1 - randomNumber2 
-	questionObject.text = randomNumber1 .. " - " .. randomNumber2 .. " = "
-
+		correctAnswer = randomNumber1 - randomNumber2 
+		questionObject.text = randomNumber1 .. " - " .. randomNumber2 .. " = "
 
 	-- multiplication
 	elseif (randomOperator == 2) then
@@ -59,17 +66,16 @@ local function AskQuestion()
 	elseif (randomOperator == 3) then
 		correctAnswer = randomNumber1 + randomNumber2
 		questionObject.text = randomNumber1 .. " + " .. randomNumber2 .. " = "
-
-		
-		
 	end
-
-	
 
 end
 
 local function HideCorrect()
 	correctObject.isVisible = false
+	AskQuestion()
+end
+
+local function HideIncorrect()
 	incorrectObject.isVisible = false
 	AskQuestion()
 end
@@ -80,56 +86,24 @@ local function NumericFieldListener( event )
 	if ( event.phase == "began" ) then
 
 
-		elseif event.phase == "submitted" then
+	elseif (event.phase == "submitted") then
 
-			--when the answer is submitted (enter key is pressed) set user input to user's answer
-			userAnswer = tonumber(event.target.text)
+		--when the answer is submitted (enter key is pressed) set user input to user's answer
+		userAnswer = tonumber(event.target.text)
 
-			--if the users answer and the correct answer are the same:
-			if (userAnswer == correctAnswer) then
-				correctObject.isVisible = true
-				timer.performWithDelay(2000, HideCorrect)
-				event.target.text = ""
+		--if the users answer and the correct answer are the same:
+		if (userAnswer == correctAnswer) then
+			correctObject.isVisible = true
+			timer.performWithDelay(2000, HideCorrect)
+			event.target.text = ""
 			
-			elseif (userAnswer ~= correctAnswer) then
-				incorrectObject.isVisible = true
-				timer.performWithDelay(2000, HideIncorrect)
-				event.target.text = ""
-
+		elseif (userAnswer ~= correctAnswer) then
+			incorrectObject.isVisible = true
+			timer.performWithDelay(2000, HideIncorrect)
+			event.target.text = ""
 		end
 	end
 end
-
-
-	--Object creation
-
-	--displays a question and sets the colour
-	questionObject = display.newText( "", display.contentWidth/3, display.contentHeight/2, nil, 40 )
-	questionObject:setTextColor(255/255, 255/255, 0/255)
-
-	--create the correct text object and make it invisible
-	correctObject = display.newText( "Correct!", display.contentWidth/2, display.contentHeight/3, nil, 50 )
-	correctObject:setTextColor(38/255, 90/255, 200/255)
-	correctObject.isVisible = false
-
-	--create the incorrect text object and make it invisible
-	incorrectObject = display.newText( "Incorrect!", display.contentWidth/2, display.contentHeight*2/3, nil, 50 )
-	incorrectObject:setTextColor(100/255, 255/255, 10/255)
-	incorrectObject.isVisible = false
-
---create numeric field
-numericField = native.newTextField( display.contentWidth/2.1, display.contentHeight/2, 90, 80 )
-numericField.inputType = "number"
-
---add the event listener for the numeric field
-numericField:addEventListener( "userInput", NumericFieldListener )
-
---fucntion calls
-
---call the function to ask the question
-AskQuestion()
--------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------
 
 --local functions
 
@@ -141,6 +115,10 @@ local function UpdateTime()
 	--display the number of seconds left in the clock object
 	clockText.text = secondsLeft .. ""
 
+	clockText = display.newText ( "5", display.contentWidth/2, display.contentHeight/3, nil, 50 )
+	clockText:setTextColor(0/255, 0/255, 255/255)
+	clockText.isVisible = true
+
 	if (secondsLeft == 0 ) then
 		--reset the number of seconds left
 		secondsLeft = totalSeconds
@@ -148,28 +126,109 @@ local function UpdateTime()
 
 		--IF THERE ARE NO LIVES LEFT, PLAY A LOSE SOUND, SHOW A YOU LOSE IMAGE
 		--AND CANCEL THE TIMER   REMOVE THE 3RD HEART BY MAKING IT INVISIBLE
-		if (lives == 2) then
-			heart2.isVisible = false
-			elseif (lives == 1) then
-				heart1.isVisible = false
-			end
+	elseif (lives == 2) then
+		heart2.isVisible = false
 
-			--CALL THE FUNCTION TO ASK A NEW QUESTION
-
-		end
+	elseif (lives == 1) then
+		heart1.isVisible = false
 	end
 
-	--function that calls the timer
-	local function StartTimer()
-		--create a countdown timer that loops infinitely
-		countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
+	--CALL THE FUNCTION TO ASK A NEW QUESTION
+
+end
+
+--function that calls the timer
+local function StartTimer()
+	--create a countdown timer that loops infinitely
+	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
+end
+
+local function UpdateHearts()
+
+	--when the user incorrectly answers a question, they lose a life and a heart disappears
+	if (lives == 4) then
+		heart1.isVisible = true
+		heart2.isVisible = true
+		heart3.isVisible = true
+		heart4.isVisible = true
+
+	elseif (lives == 3) then
+		heart1.isVisible = true
+		heart2.isVisible = true
+		heart3.isVisible = true
+		heart4.isVisible = false
+
+	elseif (lives == 2) then
+		heart1.isVisible = true
+		heart2.isVisible = true
+		heart3.isVisible = false
+		heart4.isVisible = false
+
+	elseif (lives == 1) then
+		heart1.isVisible = true
+		heart2.isVisible = false
+		heart3.isVisible = false
+		heart4.isVisible = false
+
+	elseif (lives == 0) then
+		heart1.isVisible = false
+		heart2.isVisible = false
+		heart3.isVisible = false
+		heart4.isVisible = false
 	end
+end
 
 ------------------------------------------------------------------------
 --OBJECT CREATION
 ------------------------------------------------------------------------
 
+
+--displays a question and sets the colour
+questionObject = display.newText( "", display.contentWidth/3, display.contentHeight/2, nil, 40 )
+questionObject:setTextColor(255/255, 255/255, 0/255)
+
+--create the correct text object and make it invisible
+correctObject = display.newText( "Correct!", display.contentWidth/2, display.contentHeight/3, nil, 50 )
+correctObject:setTextColor(0/255, 255/255, 0/255)
+correctObject.isVisible = false
+
+--create the incorrect text object and make it invisible
+incorrectObject = display.newText( "Incorrect!", display.contentWidth/2, display.contentHeight*2/3, nil, 50 )
+incorrectObject:setTextColor(255/255, 0/255, 0/255)
+incorrectObject.isVisible = false
+
+--create numeric field
+numericField = native.newTextField( display.contentWidth/2.1, display.contentHeight/2, 90, 80 )
+numericField.inputType = "number"
+
+--add the event listener for the numeric field
+numericField:addEventListener( "userInput", NumericFieldListener )
+
+
 --create the lives to display on the screen
 heart1 = display.newImageRect("Images/heart.png", 100, 100)
+heart1.x = display.contentWidth * 7 / 8
+heart1.y = display.contentHeight * 1 / 7
+
+heart2 = display.newImageRect("Images/heart.png", 100, 100)
 heart2.x = display.contentWidth * 6 / 8
 heart2.y = display.contentHeight * 1 / 7
+
+heart3 = display.newImageRect("Images/heart.png", 100, 100)
+heart3.x = display.contentWidth * 5 / 8
+heart3.y = display.contentHeight * 1 / 7
+
+heart4 = display.newImageRect("Images/heart.png", 100, 100)
+heart4.x = display.contentWidth * 4 / 8
+heart4.y = display.contentHeight * 1 / 7
+
+--create the game over screen
+gameOver = display.newImageRect("Images/gameOver.png",  100, 100)
+
+
+------------------------------------------------------------------------
+--FUNCTION CALLS TO START THE PROGRAM
+------------------------------------------------------------------------
+
+--call the function to ask the question
+AskQuestion()
