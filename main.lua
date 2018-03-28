@@ -22,7 +22,8 @@ local secondsLeft = 5
 local clockText
 local countDownTimer
 
-local lives = 3
+-- keeps track of the number of lives
+local lives = 4
 
 local heart1
 local heart2
@@ -80,68 +81,6 @@ local function HideIncorrect()
 	AskQuestion()
 end
 
-local function NumericFieldListener( event )
-
-	--User begins editing "numericField"
-	if ( event.phase == "began" ) then
-
-
-	elseif (event.phase == "submitted") then
-
-		--when the answer is submitted (enter key is pressed) set user input to user's answer
-		userAnswer = tonumber(event.target.text)
-
-		--if the users answer and the correct answer are the same:
-		if (userAnswer == correctAnswer) then
-			correctObject.isVisible = true
-			timer.performWithDelay(2000, HideCorrect)
-			event.target.text = ""
-			
-		elseif (userAnswer ~= correctAnswer) then
-			incorrectObject.isVisible = true
-			timer.performWithDelay(2000, HideIncorrect)
-			event.target.text = ""
-		end
-	end
-end
-
---local functions
-
-local function UpdateTime()
-
-	--decrement the number of seconds
-	secondsLeft = secondsLeft - 1
-
-	--display the number of seconds left in the clock object
-	clockText.text = secondsLeft .. ""
-
-	clockText = display.newText ( "5", display.contentWidth/2, display.contentHeight/3, nil, 50 )
-	clockText:setTextColor(0/255, 0/255, 255/255)
-	clockText.isVisible = true
-
-	if (secondsLeft == 0 ) then
-		--reset the number of seconds left
-		secondsLeft = totalSeconds
-		lives = lives - 1
-
-		--IF THERE ARE NO LIVES LEFT, PLAY A LOSE SOUND, SHOW A YOU LOSE IMAGE
-		--AND CANCEL THE TIMER   REMOVE THE 3RD HEART BY MAKING IT INVISIBLE
-	elseif (lives == 2) then
-		heart2.isVisible = false
-
-	elseif (lives == 1) then
-		heart1.isVisible = false
-	end
-
-	--CALL THE FUNCTION TO ASK A NEW QUESTION
-
-end
-
---function that calls the timer
-local function StartTimer()
-	--create a countdown timer that loops infinitely
-	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
-end
 
 local function UpdateHearts()
 
@@ -177,6 +116,85 @@ local function UpdateHearts()
 		heart4.isVisible = false
 	end
 end
+
+local function NumericFieldListener( event )
+
+	--User begins editing "numericField"
+	if ( event.phase == "began" ) then
+
+
+	elseif (event.phase == "submitted") then
+
+		--when the answer is submitted (enter key is pressed) set user input to user's answer
+		userAnswer = tonumber(event.target.text)
+
+		--if the users answer and the correct answer are the same:
+		if (userAnswer == correctAnswer) then
+			correctObject.isVisible = true
+			timer.performWithDelay(2000, HideCorrect)
+			event.target.text = ""
+			
+		-- if the user answers inncorrectly, then they lose a life
+		elseif (userAnswer ~= correctAnswer) then
+			-- the incorrect text appears
+			incorrectObject.isVisible = true
+
+			-- the user loses a life
+			lives = lives - 1
+
+			-- update the amount of lives
+			
+
+			-- after 2 seconds, the incorrect text disppears
+			timer.performWithDelay(2000, HideIncorrect)
+
+			-- erases the user's typed answer
+			event.target.text = ""
+		end
+	end
+end
+
+--local functions
+
+local function UpdateTime()
+
+	--decrement the number of seconds
+	secondsLeft = secondsLeft - 1
+
+	--display the number of seconds left in the clock object
+	clockText.text = secondsLeft .. ""
+
+	clockText = display.newText ( "5", display.contentWidth/2, display.contentHeight/3, nil, 50 )
+	clockText:setTextColor(0/255, 0/255, 255/255)
+	clockText.isVisible = true
+
+	-- the timer has reached 0
+	if (secondsLeft == 0 ) then
+		--reset the number of seconds left
+		secondsLeft = totalSeconds
+
+		-- takes away 1 life
+		lives = lives - 1
+
+		--IF THERE ARE NO LIVES LEFT, PLAY A LOSE SOUND, SHOW A YOU LOSE IMAGE
+		--AND CANCEL THE TIMER   REMOVE THE 3RD HEART BY MAKING IT INVISIBLE
+	elseif (lives == 2) then
+		heart2.isVisible = false
+
+	elseif (lives == 1) then
+		heart1.isVisible = false
+	end
+
+	--CALL THE FUNCTION TO ASK A NEW QUESTION
+
+end
+
+--function that calls the timer
+local function StartTimer()
+	--create a countdown timer that loops infinitely
+	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
+end
+
 
 ------------------------------------------------------------------------
 --OBJECT CREATION
@@ -232,3 +250,4 @@ gameOver = display.newImageRect("Images/gameOver.png",  100, 100)
 
 --call the function to ask the question
 AskQuestion()
+end
