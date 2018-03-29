@@ -42,7 +42,15 @@ local randomOperator
 
 local userAnswer
 local correctAnswer
+--use the incorrect sound from the "Sounds" folder
+local incorrectSound = audio.loadSound("Sounds/incorrect.mp3")
+local incorrectSoundChannel
+--use the correct sound from the "Sounds" folder
+local correctSound = audio.loadSound("Sounds/correct.mp3")
+local correctSoundChannel
 
+local deadSound = audio.loadSound("Sounds/dead.mp3")
+local deadSoundChannel
 ------------------------------------------------------------------------
 --LOCAL FUNCTIONS
 ------------------------------------------------------------------------
@@ -51,21 +59,29 @@ local function AskQuestion()
 	--generate 2 random numbers between a max. and a min. number
 	randomNumber1 = math.random(0, 15)
 	randomNumber2 = math.random(0, 15)
+
+	-- generates a random number representing a random operator (+,-,*)
 	randomOperator = math.random(1,3)
 
 	-- subtraction
 	if (randomOperator == 1) then
+		-- determines the correct answer by subtracting randomNumber1 from randomNumber2
 		correctAnswer = randomNumber1 - randomNumber2 
+		-- generates a subtraction question using 2 random numbers
 		questionObject.text = randomNumber1 .. " - " .. randomNumber2 .. " = "
 
 	-- multiplication
 	elseif (randomOperator == 2) then
+		-- determines the correct answer by multiplying randomNumber1 with randomNumber2
 		correctAnswer = randomNumber1 * randomNumber2
+		-- generates a multiplication question using the 
 		questionObject.text = randomNumber1 .. " * " .. randomNumber2 .. " = "
 
 	-- addition
 	elseif (randomOperator == 3) then
+		-- 
 		correctAnswer = randomNumber1 + randomNumber2
+		-- 
 		questionObject.text = randomNumber1 .. " + " .. randomNumber2 .. " = "
 	end
 
@@ -114,8 +130,16 @@ local function UpdateHearts()
 		heart2.isVisible = false
 		heart3.isVisible = false
 		heart4.isVisible = false
+		numericField.isVisible = false
+
+		gameOver = display.newImageRect("Images/gameOver.png",  1200, 1000)
+		gameOver.x = display.contentWidth/2
+        gameOver.y = display.contentHeight/2
+
+        deadSoundChannel = audio.play(deadSound)
 	end
 end
+
 
 local function NumericFieldListener( event )
 
@@ -133,23 +157,30 @@ local function NumericFieldListener( event )
 			correctObject.isVisible = true
 			timer.performWithDelay(2000, HideCorrect)
 			event.target.text = ""
-			
+			--play correct sound
+			correctSoundChannel = audio.play(correctSound)
 		-- if the user answers inncorrectly, then they lose a life
 		elseif (userAnswer ~= correctAnswer) then
 			-- the incorrect text appears
 			incorrectObject.isVisible = true
 
+			--incorrect sound effect plays
+			incorrectSoundChannel = audio.play(incorrectSound)
+
 			-- the user loses a life
 			lives = lives - 1
 
-			-- update the amount of lives
-			
+			-- update the amount of hearts
+			UpdateHearts()
 
 			-- after 2 seconds, the incorrect text disppears
 			timer.performWithDelay(2000, HideIncorrect)
 
 			-- erases the user's typed answer
 			event.target.text = ""
+
+
+		
 		end
 	end
 end
@@ -189,11 +220,6 @@ local function UpdateTime()
 
 end
 
---function that calls the timer
-local function StartTimer()
-	--create a countdown timer that loops infinitely
-	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
-end
 
 
 ------------------------------------------------------------------------
@@ -241,7 +267,7 @@ heart4.x = display.contentWidth * 4 / 8
 heart4.y = display.contentHeight * 1 / 7
 
 --create the game over screen
-gameOver = display.newImageRect("Images/gameOver.png",  100, 100)
+
 
 
 ------------------------------------------------------------------------
@@ -250,4 +276,4 @@ gameOver = display.newImageRect("Images/gameOver.png",  100, 100)
 
 --call the function to ask the question
 AskQuestion()
-end
+
