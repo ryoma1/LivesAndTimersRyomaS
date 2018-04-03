@@ -54,6 +54,10 @@ local deadSoundChannel
 ------------------------------------------------------------------------
 --LOCAL FUNCTIONS
 ------------------------------------------------------------------------
+local function StartTimer()
+	-- create a countdown timer that loops indefinetly
+	countDownTimer = timer.performWithDelay(1000, UpdateTime, 0)
+end
 
 local function AskQuestion()
 	--generate 2 random numbers between a max. and a min. number
@@ -266,6 +270,8 @@ heart4 = display.newImageRect("Images/heart.png", 100, 100)
 heart4.x = display.contentWidth * 4 / 8
 heart4.y = display.contentHeight * 1 / 7
 
+clockText = display.newText("", display.contentWidth*1/5, display.contentHeight*1/8, nil, 50)
+clockText:setTextColor(1, 1, 0)
 --create the game over screen
 
 
@@ -276,4 +282,5 @@ heart4.y = display.contentHeight * 1 / 7
 
 --call the function to ask the question
 AskQuestion()
-
+UpdateTime()
+StartTimer()
