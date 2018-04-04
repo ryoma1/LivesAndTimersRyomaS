@@ -201,6 +201,8 @@ local function NumericFieldListener( event )
 			-- the incorrect text appears
 			incorrectObject.isVisible = true
 
+			UpdateTime()
+
 			--incorrect sound effect plays
 			incorrectSoundChannel = audio.play(incorrectSound)
 
