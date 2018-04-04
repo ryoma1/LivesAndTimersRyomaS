@@ -17,7 +17,7 @@ display.setDefault("background", 0/255, 20/255, 100/255)
 --------------------------------------------------------------------
 
 --variables for the timer
-local totalSeconds = 5
+local totalSeconds = 6
 local secondsLeft = 5
 local clockText
 local countDownTimer
@@ -102,45 +102,14 @@ local function UpdateTime()
 		--reset the number of seconds left
 		secondsLeft = totalSeconds
 
+		AskQuestion()
+
 		-- takes away 1 life
 		lives = lives - 1
 
 		--IF THERE ARE NO LIVES LEFT, PLAY A LOSE SOUND, SHOW A YOU LOSE IMAGE
 		--AND CANCEL THE TIMER   REMOVE THE 3RD HEART BY MAKING IT INVISIBLE
-	elseif (lives == 2) then
-		heart2.isVisible = false
-
-	elseif (lives == 1) then
-		heart1.isVisible = false
-	end
-
-	--CALL THE FUNCTION TO ASK A NEW QUESTION
-
-end
-----------------------------------------------------------------------------------------
-
-local function StartTimer()
-	-- create a countdown timer that loops indefinetly
-	countDownTimer = timer.performWithDelay(1000, UpdateTime, 0)
-end
-
-
-
-local function HideCorrect()
-	correctObject.isVisible = false
-	AskQuestion()
-end
-
-local function HideIncorrect()
-	incorrectObject.isVisible = false
-	AskQuestion()
-end
-
-
-local function UpdateHearts()
-
-	--when the user incorrectly answers a question, they lose a life and a heart disappears
-	if (lives == 4) then
+	elseif (lives == 4) then
 		heart1.isVisible = true
 		heart2.isVisible = true
 		heart3.isVisible = true
@@ -171,13 +140,41 @@ local function UpdateHearts()
 		heart4.isVisible = false
 		numericField.isVisible = false
 
+
 		gameOver = display.newImageRect("Images/gameOver.png",  1200, 1000)
 		gameOver.x = display.contentWidth/2
         gameOver.y = display.contentHeight/2
 
         deadSoundChannel = audio.play(deadSound)
 	end
+
+	--CALL THE FUNCTION TO ASK A NEW QUESTION
+
 end
+----------------------------------------------------------------------------------------
+
+local function StartTimer()
+	-- create a countdown timer that loops indefinetly
+	countDownTimer = timer.performWithDelay(1000, UpdateTime, 0)
+end
+
+
+
+local function HideCorrect()
+	correctObject.isVisible = false
+	AskQuestion()
+end
+
+local function HideIncorrect()
+	incorrectObject.isVisible = false
+	AskQuestion()
+end
+
+
+local function UpdateHearts()
+end
+
+
 
 
 local function NumericFieldListener( event )
@@ -194,6 +191,7 @@ local function NumericFieldListener( event )
 		--if the users answer and the correct answer are the same:
 		if (userAnswer == correctAnswer) then
 			correctObject.isVisible = true
+			UpdateTime()
 			timer.performWithDelay(2000, HideCorrect)
 			event.target.text = ""
 			--play correct sound
@@ -273,7 +271,7 @@ heart4 = display.newImageRect("Images/heart.png", 100, 100)
 heart4.x = display.contentWidth * 4 / 8
 heart4.y = display.contentHeight * 1 / 7
 
-clockText = display.newText("totalSeconds", display.contentWidth*1/5, display.contentHeight*1/8, nil, 50)
+clockText = display.newText(secondsLeft, display.contentWidth*1/5, display.contentHeight*1/8, nil, 50)
 clockText:setTextColor(1, 1, 0)
 --create the game over screen
 
