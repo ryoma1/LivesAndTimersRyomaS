@@ -54,11 +54,6 @@ local deadSoundChannel
 ------------------------------------------------------------------------
 --LOCAL FUNCTIONS
 ------------------------------------------------------------------------
-local function StartTimer()
-	-- create a countdown timer that loops indefinetly
-	countDownTimer = timer.performWithDelay(1000, UpdateTime, 0)
-end
-
 local function AskQuestion()
 	--generate 2 random numbers between a max. and a min. number
 	randomNumber1 = math.random(0, 15)
@@ -90,6 +85,46 @@ local function AskQuestion()
 	end
 
 end
+
+local function UpdateTime()
+
+	--decrement the number of seconds
+	secondsLeft = secondsLeft - 1
+
+	--display the number of seconds left in the clock object
+	clockText.text = secondsLeft .. ""
+
+	clockText:setTextColor(150/255, 255/255, 0/255)
+	clockText.isVisible = true
+
+	-- the timer has reached 0
+	if (secondsLeft == 0 ) then
+		--reset the number of seconds left
+		secondsLeft = totalSeconds
+
+		-- takes away 1 life
+		lives = lives - 1
+
+		--IF THERE ARE NO LIVES LEFT, PLAY A LOSE SOUND, SHOW A YOU LOSE IMAGE
+		--AND CANCEL THE TIMER   REMOVE THE 3RD HEART BY MAKING IT INVISIBLE
+	elseif (lives == 2) then
+		heart2.isVisible = false
+
+	elseif (lives == 1) then
+		heart1.isVisible = false
+	end
+
+	--CALL THE FUNCTION TO ASK A NEW QUESTION
+
+end
+----------------------------------------------------------------------------------------
+
+local function StartTimer()
+	-- create a countdown timer that loops indefinetly
+	countDownTimer = timer.performWithDelay(1000, UpdateTime, 0)
+end
+
+
 
 local function HideCorrect()
 	correctObject.isVisible = false
@@ -191,38 +226,6 @@ end
 
 --local functions
 
-local function UpdateTime()
-
-	--decrement the number of seconds
-	secondsLeft = secondsLeft - 1
-
-	--display the number of seconds left in the clock object
-	clockText.text = secondsLeft .. ""
-
-	clockText = display.newText ( "5", display.contentWidth/2, display.contentHeight/3, nil, 50 )
-	clockText:setTextColor(150/255, 255/255, 0/255)
-	clockText.isVisible = true
-
-	-- the timer has reached 0
-	if (secondsLeft == 0 ) then
-		--reset the number of seconds left
-		secondsLeft = totalSeconds
-
-		-- takes away 1 life
-		lives = lives - 1
-
-		--IF THERE ARE NO LIVES LEFT, PLAY A LOSE SOUND, SHOW A YOU LOSE IMAGE
-		--AND CANCEL THE TIMER   REMOVE THE 3RD HEART BY MAKING IT INVISIBLE
-	elseif (lives == 2) then
-		heart2.isVisible = false
-
-	elseif (lives == 1) then
-		heart1.isVisible = false
-	end
-
-	--CALL THE FUNCTION TO ASK A NEW QUESTION
-
-end
 
 
 
@@ -270,7 +273,7 @@ heart4 = display.newImageRect("Images/heart.png", 100, 100)
 heart4.x = display.contentWidth * 4 / 8
 heart4.y = display.contentHeight * 1 / 7
 
-clockText = display.newText("", display.contentWidth*1/5, display.contentHeight*1/8, nil, 50)
+clockText = display.newText("totalSeconds", display.contentWidth*1/5, display.contentHeight*1/8, nil, 50)
 clockText:setTextColor(1, 1, 0)
 --create the game over screen
 
@@ -282,5 +285,4 @@ clockText:setTextColor(1, 1, 0)
 
 --call the function to ask the question
 AskQuestion()
-UpdateTime()
 StartTimer()
