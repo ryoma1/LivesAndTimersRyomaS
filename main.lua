@@ -200,7 +200,7 @@ local function UpdateTime()
 	clockText.text = secondsLeft .. ""
 
 	clockText = display.newText ( "5", display.contentWidth/2, display.contentHeight/3, nil, 50 )
-	clockText:setTextColor(0/255, 0/255, 255/255)
+	clockText:setTextColor(150/255, 255/255, 0/255)
 	clockText.isVisible = true
 
 	-- the timer has reached 0
